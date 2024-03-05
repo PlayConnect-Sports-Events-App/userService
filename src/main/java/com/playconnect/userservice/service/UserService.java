@@ -24,7 +24,7 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
-        log.info("User {} is saved", user.getId());
+        log.info("User {} is saved", user.getUserId());
     }
 
     public List<UserResponse> getUsers() {
@@ -34,7 +34,7 @@ public class UserService {
 
     private UserResponse mapToUserResponse(User user) {
         return UserResponse.builder()
-                .id(user.getId())
+                .id(user.getUserId())
                 .email(user.getEmail())
                 .build();
     }
