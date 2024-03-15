@@ -1,10 +1,10 @@
 package com.playconnect.userservice.service;
 
 import com.playconnect.userservice.config.JWTService;
-import com.playconnect.userservice.dto.UserResponse;
 import com.playconnect.userservice.dto.auth.AuthenticationRequest;
 import com.playconnect.userservice.dto.auth.AuthenticationResponse;
 import com.playconnect.userservice.dto.auth.RegistrationRequest;
+import com.playconnect.userservice.dto.auth.UpdateUserPasswordRequest;
 import com.playconnect.userservice.model.Role;
 import com.playconnect.userservice.model.User;
 import com.playconnect.userservice.repository.UserRepository;
@@ -48,5 +48,17 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(token)
                 .build();
+    }
+
+    public void updateUserPassword(UpdateUserPasswordRequest request) {
+        User user = userRepository.findById(request.getUserId()).orElseThrow();
+        if(passwordEncoder.matches(request.getOldPassword(), user.getPassword())){
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+        }
+        else
+        {
+            throw new RuntimeException("Wrong current password");
+        }
     }
 }

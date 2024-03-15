@@ -3,14 +3,11 @@ package com.playconnect.userservice.controller;
 import com.playconnect.userservice.dto.auth.AuthenticationRequest;
 import com.playconnect.userservice.dto.auth.AuthenticationResponse;
 import com.playconnect.userservice.dto.auth.RegistrationRequest;
+import com.playconnect.userservice.dto.auth.UpdateUserPasswordRequest;
 import com.playconnect.userservice.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,5 +24,11 @@ public class AuthenticationController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
+    }
+
+    @PutMapping("/updatePassword")
+    public ResponseEntity<String> updateUserPassword(@RequestBody UpdateUserPasswordRequest request) {
+        authenticationService.updateUserPassword(request);
+        return ResponseEntity.ok("Password updated successfully");
     }
 }
