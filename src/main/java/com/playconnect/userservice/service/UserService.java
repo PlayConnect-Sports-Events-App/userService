@@ -42,6 +42,11 @@ public class UserService {
         return mapToUserResponse(user);
     }
 
+    public UserResponse getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return mapToUserResponse(user);
+    }
+
     public UserResponse updateUser(Long userId, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findById(userId).orElseThrow();
         user.setFirstName(updateUserRequest.getFirstName());

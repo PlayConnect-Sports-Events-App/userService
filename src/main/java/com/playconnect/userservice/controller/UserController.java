@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// Todo: At the moment you need jwt token to access this controller
+// Todo: need jwt token to access this controller, when updating or deleting a user need to compare the jwt token if it is the same email as the user
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -31,6 +31,11 @@ public class UserController {
     @GetMapping("/{userId}")
     public UserResponse getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId);
+    }
+
+    @GetMapping("/email/{email}")
+    public UserResponse getUserByEmail(@PathVariable String email) {
+        return userService.getUserByEmail(email);
     }
 
     @PutMapping("/{userId}")
