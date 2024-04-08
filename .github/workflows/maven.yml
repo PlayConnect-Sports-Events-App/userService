@@ -8,6 +8,7 @@
 
 name: User Service
 
+# Trigger the workflow on push or pull request to the main branch
 on:
   push:
     branches: [ "main" ]
@@ -18,7 +19,7 @@ jobs:
   git_guardian:
     name: GitGuardian scan
     runs-on: ubuntu-latest
-    continue-on-error: true # This ensures that subsequent jobs will run even if this job fails.
+    continue-on-error: true # Continue to the next job even if this one fails
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -33,6 +34,7 @@ jobs:
           GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
           
+  # Define the test job
   test:
     runs-on: ubuntu-latest
     services:
@@ -58,8 +60,9 @@ jobs:
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       run: mvn test --file pom.xml -Dspring.datasource.url=${SPRING_DATASOURCE_URL} -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
 
+  # Define the build job
   build:
-    needs: test
+    needs: test # This job runs after the test job completes
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -84,8 +87,9 @@ jobs:
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       run: mvn -B package --file pom.xml -Dspring.datasource.url=${SPRING_DATASOURCE_URL} -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
 
+  # Define the Docker publish job
   docker-publish:
-    needs: build
+    needs: build # This job runs after the build job completes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -96,6 +100,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: Create .env file
+        run: |
+          echo JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} > .env
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
