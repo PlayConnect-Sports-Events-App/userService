@@ -16,6 +16,9 @@ WORKDIR /app
 # Copy the JAR from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
+# Copy the .env file into the Docker image
+COPY .env .
+
 # Expose the port the application runs on
 
 
