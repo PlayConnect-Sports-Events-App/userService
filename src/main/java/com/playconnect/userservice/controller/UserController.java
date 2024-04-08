@@ -1,5 +1,6 @@
 package com.playconnect.userservice.controller;
 
+import com.playconnect.userservice.dto.user.CommonInfoUserResponse;
 import com.playconnect.userservice.dto.user.UpdateUserRequest;
 import com.playconnect.userservice.dto.user.UserRequest;
 import com.playconnect.userservice.dto.user.UserResponse;
@@ -31,6 +32,11 @@ public class UserController {
     @GetMapping("/{userId}")
     public UserResponse getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId);
+    }
+
+    @GetMapping("/{userId}/common")
+    public CommonInfoUserResponse getCommonInfoUserById(@PathVariable Long userId) {
+        return userService.getCommonInfoUserById(userId);
     }
 
     @GetMapping("/email/{email}")

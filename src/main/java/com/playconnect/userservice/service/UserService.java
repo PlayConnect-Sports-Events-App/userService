@@ -1,5 +1,6 @@
 package com.playconnect.userservice.service;
 
+import com.playconnect.userservice.dto.user.CommonInfoUserResponse;
 import com.playconnect.userservice.dto.user.UpdateUserRequest;
 import com.playconnect.userservice.dto.user.UserRequest;
 import com.playconnect.userservice.dto.user.UserResponse;
@@ -40,6 +41,15 @@ public class UserService {
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
         return mapToUserResponse(user);
+    }
+
+    public CommonInfoUserResponse getCommonInfoUserById(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        return CommonInfoUserResponse.builder()
+                .id(user.getUserId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build();
     }
 
     public UserResponse getUserByEmail(String email) {
