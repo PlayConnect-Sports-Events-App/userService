@@ -39,12 +39,12 @@ public class UserService {
     }
 
     public UserResponse getUserById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         return mapToUserResponse(user);
     }
 
     public CommonInfoUserResponse getCommonInfoUserById(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         return CommonInfoUserResponse.builder()
                 .id(user.getUserId())
                 .firstName(user.getFirstName())
@@ -53,12 +53,12 @@ public class UserService {
     }
 
     public UserResponse getUserByEmail(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
         return mapToUserResponse(user);
     }
 
     public UserResponse updateUser(Long userId, UpdateUserRequest updateUserRequest) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         user.setFirstName(updateUserRequest.getFirstName());
         user.setLastName(updateUserRequest.getLastName());
         user.setEmail(updateUserRequest.getEmail());

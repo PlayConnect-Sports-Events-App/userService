@@ -1,5 +1,6 @@
 package com.playconnect.userservice.config;
 
+import com.playconnect.userservice.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -35,7 +36,14 @@ public class JWTService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        // Adding userId to the claims
+        Map<String, Object> claims = new HashMap<>();
+        // Cast UserDetails to User
+        if (userDetails instanceof User) {
+            User user = (User) userDetails;
+            claims.put("userId", user.getUserId()); // Adding userId to the claims
+        }
+        return generateToken(claims, userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
