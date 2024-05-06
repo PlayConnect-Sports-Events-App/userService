@@ -5,12 +5,15 @@ import com.playconnect.userservice.dto.auth.AuthenticationRequest;
 import com.playconnect.userservice.dto.auth.AuthenticationResponse;
 import com.playconnect.userservice.dto.auth.RegistrationRequest;
 import com.playconnect.userservice.dto.auth.UpdateUserPasswordRequest;
+import com.playconnect.userservice.error.AuthenticationFailureException;
 import com.playconnect.userservice.model.Role;
 import com.playconnect.userservice.model.User;
 import com.playconnect.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,14 +43,19 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        var token = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(token)
-                .build();
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+            User user = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + request.getEmail()));
+            var token = jwtService.generateToken(user);
+            return AuthenticationResponse.builder()
+                    .token(token)
+                    .build();
+        } catch (AuthenticationException e) {
+            throw new AuthenticationFailureException("Invalid email or password");
+        }
     }
 
     public void updateUserPassword(UpdateUserPasswordRequest request) {
