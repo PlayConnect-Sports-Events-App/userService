@@ -8,6 +8,11 @@
 
 name: User Service
 
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT }} # Project ID from your account
+  SERVICE: user-service # Google Cloud Run service name
+  REGION: europe-west4
+
 # Trigger the workflow on push or pull request to the main branch
 on:
   push:
