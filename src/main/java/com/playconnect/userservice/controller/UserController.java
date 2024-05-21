@@ -1,16 +1,19 @@
 package com.playconnect.userservice.controller;
 
+import com.playconnect.userservice.config.JWTService;
 import com.playconnect.userservice.dto.user.CommonInfoUserResponse;
 import com.playconnect.userservice.dto.user.UpdateUserRequest;
 import com.playconnect.userservice.dto.user.UserRequest;
 import com.playconnect.userservice.dto.user.UserResponse;
 import com.playconnect.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// Todo: need jwt token to access this controller, when updating or deleting a user need to compare the jwt token if it is the same email as the user
+// Todo: need jwt token to access this controller, when updating or deleting a user need to compare the jwt token if it is the same id as the user
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -30,8 +33,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserResponse getUserById(@PathVariable Long userId) {
-        return userService.getUserById(userId);
+    public ResponseEntity<?> getUserById(@PathVariable Long userId, @RequestHeader("Authorization") String authHeader) {
+        return ResponseEntity.ok(userService.getUserById(userId, authHeader.replace("Bearer ", "")));
     }
 
     @GetMapping("/{userId}/common")
@@ -40,18 +43,19 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-    public UserResponse getUserByEmail(@PathVariable String email) {
-        return userService.getUserByEmail(email);
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email, @RequestHeader("Authorization") String authHeader) {
+        return ResponseEntity.ok(userService.getUserByEmail(email, authHeader.replace("Bearer ", "")));
     }
 
     @PutMapping("/{userId}")
-    public UserResponse updateUser(@PathVariable Long userId, @RequestBody UpdateUserRequest userRequest) {
-        return userService.updateUser(userId, userRequest);
+    public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody UpdateUserRequest userRequest, @RequestHeader("Authorization") String authHeader) {
+        return ResponseEntity.ok(userService.updateUser(userId, userRequest, authHeader.replace("Bearer ", "")));
     }
 
+
     @DeleteMapping("/{userId}")
-    public String deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
-        return "User deleted successfully";
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId, @RequestHeader("Authorization") String authHeader) {
+        userService.deleteUser(userId, authHeader.replace("Bearer ", ""));
+        return ResponseEntity.ok("User deleted successfully");
     }
 }

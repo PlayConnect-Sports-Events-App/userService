@@ -26,6 +26,10 @@ public class JWTService {
 
    // private static final String SECRET_KEY = secretKey;
 
+    public Long getUserIdFromToken(String token) {
+        return extractClaim(token, claims -> claims.get("userId", Long.class));
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }

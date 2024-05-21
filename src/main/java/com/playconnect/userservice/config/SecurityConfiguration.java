@@ -24,7 +24,7 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/user/auth/**", "/api/user/{userId}/common")
+                .requestMatchers("/api/user/auth/register", "/api/user/auth/authenticate", "/api/user/{userId}/common", "/h2-console/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -34,6 +34,10 @@ public class SecurityConfiguration {
                 .and()
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // Disable X-Frame-Options to allow H2 console access
+        //http.headers().frameOptions().disable();
+
         return http.build();
     }
 }
