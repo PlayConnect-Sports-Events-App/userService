@@ -113,4 +113,4 @@ jobs:
         run: gcloud run services list --platform managed --region ${{ env.REGION }}
       - name: Get Cloud Run Logs
         run: |
-          gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=${{ env.SERVICE }}" --limit 
+           gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=${{ env.SERVICE }}" --limit 10
