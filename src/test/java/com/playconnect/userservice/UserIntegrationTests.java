@@ -7,13 +7,18 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -28,6 +33,9 @@ public class UserIntegrationTests {
 
     @Autowired
     private JWTService jwtService;
+
+    @MockBean
+    private RestTemplate restTemplate;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -103,10 +111,21 @@ public class UserIntegrationTests {
 
     @Test
     public void deleteUser_ValidTokenMatchingId_ShouldDeleteUser() throws Exception {
+        //local
+        //String url = "http://localhost:8081/api/event/user/" + user1Id;
+        //cloud
+        String url = "https://api-gateway-xwjwz3lfdq-ez.a.run.app/api/event/user/" + user1Id;
+
+        // Setup mock for RestTemplate
+        Mockito.doNothing().when(restTemplate).delete(url);
+
         mockMvc.perform(delete("/api/user/{userId}", user1Id)
                         .header("Authorization", "Bearer " + user1Token))
                 .andExpect(status().isOk())
                 .andExpect(content().string("User deleted successfully"));
+
+        // Verify that the RestTemplate's delete method was called with the correct URL
+        verify(restTemplate).delete(url);
     }
 
     @Test

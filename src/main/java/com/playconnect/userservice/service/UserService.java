@@ -12,6 +12,7 @@ import com.playconnect.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JWTService jwtService;
+    private final RestTemplate restTemplate;
 
     public void validateUser(Long requestUserId, String token) {
         // Extract JWT Token
@@ -90,8 +92,21 @@ public class UserService {
     public void deleteUser(Long userId, String token) {
         // validate user
         validateUser(userId, token);
+
+        // Notify EventService to delete events by user ID
+        deleteEventsByUser(userId);
+
         // continue with the logic
         userRepository.deleteById(userId);
+    }
+
+    private void deleteEventsByUser(Long userId) {
+        //local
+        //String url = "http://localhost:8081/api/event/user/" + userId;
+        //cloud
+        String url = "https://api-gateway-xwjwz3lfdq-ez.a.run.app/api/event/user/" + userId;
+
+        restTemplate.delete(url); // Make DELETE request to EventService
     }
 
     private UserResponse mapToUserResponse(User user) {
